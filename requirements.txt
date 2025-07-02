@@ -1,5 +1,9 @@
+--upgrade pip
+tensorflow==2.18.0
 Flask
 numpy
-Pillow
+pillow
 openai
 python-dotenv
+tqdm
+# ... any other packages you use
