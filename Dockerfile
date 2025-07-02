@@ -23,26 +23,23 @@ RUN apt-get update && apt-get install -y \
     libxmlsec1-dev \
     libffi-dev \
     libdb-dev \
-    git
-
-# Upgrade pip
-RUN pip install --upgrade pip
-
-# Install TensorFlow BEFORE requirements.txt
-RUN pip install tensorflow==2.13.0
+    git && \
+    apt-get clean
 
 # Set working directory
 WORKDIR /app
 
-# Copy and install app dependencies
+# Copy requirements and upgrade pip, install TensorFlow first
 COPY requirements.txt /app/
-RUN pip install -r requirements.txt
+RUN pip install --upgrade pip && \
+    pip install tensorflow==2.18.0 && \
+    pip install -r requirements.txt
 
-# Copy all other project files
+# Copy the rest of the app
 COPY . /app
 
-# Expose port (default Flask)
+# Expose port for Flask
 EXPOSE 5000
 
-# Start the app
+# Run the application
 CMD ["python", "app.py"]
