@@ -1,5 +1,4 @@
 Flask
-tensorflow==2.12.0
 numpy
 Pillow
 openai
