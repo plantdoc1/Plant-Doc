@@ -29,16 +29,19 @@ RUN apt-get update && apt-get install -y \
 # Set working directory
 WORKDIR /app
 
-# Copy requirements and upgrade pip, install TensorFlow first
+# Copy requirements first
 COPY requirements.txt /app/
-RUN pip install --upgrade pip && \
-    pip install tensorflow==2.18.0 && \
-    pip install -r requirements.txt
+
+# Use python -m pip to avoid upgrade conflicts
+RUN python -m ensurepip && \
+    python -m pip install --upgrade pip && \
+    python -m pip install tensorflow==2.18.0 && \
+    python -m pip install -r requirements.txt
 
 # Copy the rest of the app
 COPY . /app
 
-# Expose port for Flask
+# Expose port
 EXPOSE 5000
 
 # Run the application
