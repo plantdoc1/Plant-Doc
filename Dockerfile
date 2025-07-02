@@ -1,4 +1,4 @@
-# Use official Python base image
+# Use official slim Python 3.10 image
 FROM python:3.10-slim
 
 # Set environment variables
@@ -8,27 +8,41 @@ ENV PYTHONUNBUFFERED=1
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
-    libpq-dev \
-    curl
+    curl \
+    libssl-dev \
+    libffi-dev \
+    libbz2-dev \
+    liblzma-dev \
+    libreadline-dev \
+    libsqlite3-dev \
+    zlib1g-dev \
+    libncursesw5-dev \
+    libgdbm-dev \
+    libnss3-dev \
+    libxml2-dev \
+    libxmlsec1-dev \
+    libffi-dev \
+    libdb-dev \
+    git
 
-# Set work directory
-WORKDIR /app
-
-# Copy only requirements first for caching
-COPY requirements.txt .
-
-# Install pip and TensorFlow first
+# Upgrade pip
 RUN pip install --upgrade pip
+
+# Install TensorFlow BEFORE requirements.txt
 RUN pip install tensorflow==2.13.0
 
-# Now install the rest of the dependencies
+# Set working directory
+WORKDIR /app
+
+# Copy and install app dependencies
+COPY requirements.txt /app/
 RUN pip install -r requirements.txt
 
-# Copy the rest of the project
-COPY . .
+# Copy all other project files
+COPY . /app
 
-# Expose Flask port
+# Expose port (default Flask)
 EXPOSE 5000
 
-# Run the Flask app
+# Start the app
 CMD ["python", "app.py"]
