@@ -9,6 +9,7 @@ ENV PYTHONUNBUFFERED=1
 RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
+    wget \
     libssl-dev \
     libffi-dev \
     libbz2-dev \
@@ -21,10 +22,14 @@ RUN apt-get update && apt-get install -y \
     libnss3-dev \
     libxml2-dev \
     libxmlsec1-dev \
-    libffi-dev \
     libdb-dev \
     git && \
     apt-get clean
+
+# Install pip manually
+RUN wget https://bootstrap.pypa.io/get-pip.py && \
+    python get-pip.py && \
+    rm get-pip.py
 
 # Set working directory
 WORKDIR /app
@@ -32,17 +37,15 @@ WORKDIR /app
 # Copy requirements first
 COPY requirements.txt /app/
 
-# Use python -m pip to avoid upgrade conflicts
-RUN python -m ensurepip && \
-    python -m pip install --upgrade pip && \
-    python -m pip install tensorflow==2.18.0 && \
-    python -m pip install -r requirements.txt
+# Install Python dependencies
+RUN pip install --no-cache-dir tensorflow==2.18.0 && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the app
+# Copy project files
 COPY . /app
 
-# Expose port
+# Expose Flask default port
 EXPOSE 5000
 
-# Run the application
+# Run the app
 CMD ["python", "app.py"]
